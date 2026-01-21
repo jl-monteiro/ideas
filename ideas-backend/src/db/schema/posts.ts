@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, uuid, varchar, timestamp } from "drizzle-orm/pg-core";
 export const postTypeEnum = pgEnum("post_type", [
   "effects",
   "textures",
@@ -11,4 +11,10 @@ export const Posts = pgTable("posts", {
   video: varchar({ length: 512 }).notNull(),
   file: varchar({ length: 1024 }).notNull(),
   type: postTypeEnum().default("effects").notNull(),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
 });

@@ -1,9 +1,11 @@
 import { Hono } from "hono";
 import { getUserById } from "./db/queries";
+import { auth } from "./lib/auth";
 
-const app = new Hono();
+const app = new Hono().basePath('/api')
 
-app.get("/api/users/:userId", async (c) => {
+app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw));
+app.get("/users/:userId", async (c) => {
   try {
     const userId = c.req.param("userId");
     const user = await getUserById(userId);

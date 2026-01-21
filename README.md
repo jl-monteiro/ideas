@@ -24,3 +24,5 @@ npm run dev
 ```
 
 open http://localhost:3000 or http://localhost:5173
+
+docs auth: http://localhost:3000/api/auth/reference
