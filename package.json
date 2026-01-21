@@ -1,0 +1,16 @@
+{
+  "name": "ideas",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm run dev --prefix ideas-backend",
+    "dev:web": "npm run dev --prefix ideas-frontend",
+    "db:up": "npm run db:up --prefix ideas-backend",
+    "db:generate": "npm run db:generate --prefix ideas-backend",
+    "db:migrate": "npm run db:migrate --prefix ideas-backend",
+    "db:studio": "npm run db:studio --prefix ideas-backend",
+    "db:seed": "npm run db:seed --prefix ideas-backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
