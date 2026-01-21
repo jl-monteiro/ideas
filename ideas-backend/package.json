@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
+    "better-auth": "^1.4.17",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.11.4",
     "pg": "^8.17.1"
