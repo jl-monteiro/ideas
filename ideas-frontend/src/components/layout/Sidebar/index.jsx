@@ -1,8 +1,19 @@
 import { CiLogin } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
-
+import { authClient } from "../../../lib/auth-client";
 const Sidebar = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { data: session } = authClient.useSession();
+
+  const handleLogin = () => {
+    if (session) {
+      authClient.signOut();
+      return;
+    } else {
+      navigate("/login");
+      return;
+    }
+  };
 
   return (
     <div className="drawer-side is-drawer-close:overflow-visible">
@@ -19,7 +30,7 @@ const Sidebar = () => {
             <button
               className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
               data-tip="Homepage"
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
             >
               {/* Home icon */}
               <svg
@@ -35,21 +46,21 @@ const Sidebar = () => {
                 <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
                 <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               </svg>
-              <span className="is-drawer-close:hidden">Homepage</span>
+              <span className="is-drawer-close:hidden">Home</span>
             </button>
           </li>
 
-          {/* List item */}
           <li>
             <button
               className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-              data-tip="Login"
-              onClick={() => navigate('/login')}
+              data-tip={session ? "Logout" : "Login"}
+              onClick={handleLogin}
             >
-              
               <CiLogin size="18" />
-              
-              <span className="is-drawer-close:hidden">Login</span>
+
+              <span className="is-drawer-close:hidden">
+                {session ? "Logout" : "Login"}
+              </span>
             </button>
           </li>
         </ul>

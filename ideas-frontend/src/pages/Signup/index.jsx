@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { KeyRound, Mail, OctagonAlert, User } from "lucide-react";
+import { authClient } from "../../lib/auth-client";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -7,93 +9,145 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { data: session, isPending } = authClient.useSession();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    try {
+      const rsp = await authClient.signUp.email({ name, email, password });
+      if (rsp?.error) {
+        if (rsp.error.status === 422) {
+          setError("E-mail já cadastrado ou dados inválidos.");
+          return;
+        }
+        setError(rsp.error.message || "Erro ao criar conta");
+        return;
+      }
+
+      navigate("/");
+    } catch (err) {
+      setError("Ocorreu um erro inesperado. Tente novamente.");
+      console.error("Signup falhou: ", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (!isPending && session) {
+      navigate("/");
+    }
+  }, [session, isPending, navigate]);
+
+  if (isPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-base-200">
       <div className="card bg-base-100 w-full max-w-md shadow-2xl">
         <div className="card-body">
-          <h2 className="card-title text-2xl font-bold justify-center mb-6">
-            Registre-se
+          <h2 className="card-title text-3xl font-bold justify-center py-2">
+            Criar conta
           </h2>
 
-          {error && (
-            <div className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2"
+          <form onSubmit={handleSubmit} className="fieldset p-4 space-y-2">
+            <div>
+              <label className="input validator flex items-center gap-2 w-full">
+                <User />
+                <input
+                  type="text"
+                  required
+                  placeholder="Nome de usuário"
+                  pattern="[A-Za-z][A-Za-z0-9\-]*"
+                  minLength={3}
+                  maxLength={30}
+                  title="Use apenas letras e números"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
                 />
-              </svg>
-              <span>{error}</span>
+              </label>
+              <p className="validator-hint hidden text-sm">
+                Entre 3 e 30 caracteres apenas letras e números
+              </p>
             </div>
-          )}
 
-          <form onSubmit={handleSubmit} className="fieldset p-4">
-            <label className="label">
-              <span className="label-text">Nome</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Digite seu nome"
-              className="input input-bordered w-full mb-4"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <div>
+              <label className="input validator flex items-center gap-2 w-full">
+                <Mail />
+                <input
+                  type="email"
+                  placeholder="email@exemplo.com"
+                  required
+                  title="Informe um e-mail válido"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                />
+              </label>
+              <p className="validator-hint hidden text-sm">
+                Informe um endereço de e-mail válido
+              </p>
+            </div>
 
-            <label className="label">
-              <span className="label-text">Email</span>
-            </label>
-            <input
-              type="email"
-              placeholder="Digite seu email"
-              className="input input-bordered w-full mb-4"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-
-            <label className="label">
-              <span className="label-text">Senha</span>
-            </label>
-            <input
-              type="password"
-              placeholder="Digite sua senha"
-              className="input input-bordered w-full mb-4"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-
+            <div>
+              <label className="input validator flex items-center gap-2 w-full">
+                <KeyRound />
+                <input
+                  type="password"
+                  required
+                  placeholder="Senha"
+                  minLength={8}
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                  title="A senha deve conter no mínimo 8 caracteres, incluindo letra maiúscula, minúscula e número"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                />
+              </label>
+              <p className="validator-hint hidden text-sm">
+                Senha deve conter 8 caracteres, maiúsculas, minúsculas e um
+                número
+              </p>
+            </div>
             <button
               type="submit"
               disabled={loading}
-              className={`btn btn-primary w-full ${loading ? "loading" : ""}`}
+              className="btn btn-primary w-full"
             >
-              {loading ? "Cadastrando..." : "Cadastrar"}
+              {loading ? (
+                <span className="loading loading-spinner loading-xs"></span>
+              ) : (
+                "Cadastrar"
+              )}
             </button>
           </form>
 
+          {error && (
+            <div className="alert alert-error">
+              <OctagonAlert />
+              <span>{error}</span>
+            </div>
+          )}
+          
           <div className="divider">OU</div>
+
           <div className="text-center">
-            <span className="text-sm">Já tem uma conta? </span>
+            <span className="text-sm">Já possui uma conta? </span>
             <Link
               to="/login"
               className="link link-primary text-sm font-semibold"
             >
-              Faça login aqui
+              Faça login
             </Link>
           </div>
         </div>

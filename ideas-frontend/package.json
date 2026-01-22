@@ -13,6 +13,7 @@
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.2",
+    "better-auth": "^1.4.17",
     "hono": "^4.11.4",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
