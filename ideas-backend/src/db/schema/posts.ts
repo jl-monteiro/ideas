@@ -5,7 +5,7 @@ export const postTypeEnum = pgEnum("post_type", [
   "genrl",
 ]);
 
-export const Posts = pgTable("posts", {
+export const posts = pgTable("posts", {
   id: uuid().primaryKey().defaultRandom(),
   name: varchar({ length: 256 }).notNull(),
   video: varchar({ length: 512 }).notNull(),

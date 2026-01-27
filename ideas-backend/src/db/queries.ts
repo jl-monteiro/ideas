@@ -1,10 +1,16 @@
-import { sql } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { db } from "./db";
-import { user } from "./schema/user";
+import { posts } from "./schema/posts";
 
-export const getUserById = async (userId: string) => {
-    return await db.select().from(user).where(sql`${user.id} = ${userId}`);
-}
-export const getAllUsers = async () => {
-    return await db.select().from(user);
-}
+export const getAllPosts = async () => {
+  return await db
+    .select({
+      id: posts.id,
+      name: posts.name,
+      video: posts.video,
+      type: posts.type,
+      createdAt: posts.createdAt,
+    })
+    .from(posts)
+    .orderBy(desc(posts.createdAt));
+};

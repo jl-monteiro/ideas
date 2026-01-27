@@ -1,5 +1,5 @@
-import { KeyRound, OctagonAlert, User } from "lucide-react";
-import { useState, useEffect } from "react";
+import { KeyRound, Mail, OctagonAlert } from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authClient } from "../../lib/auth-client";
 
@@ -9,7 +9,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
+
+  if (session) {
+    navigate("/");
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,23 +35,11 @@ const Login = () => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    if (!isPending && session) {
-      navigate("/");
-    }
-  }, [session, isPending, navigate]);
 
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
       <div className="card bg-base-100 w-full max-w-md shadow-2xl">
-        <div className="card-body">
+        <div className="card-body p-8">
           <h2 className="card-title text-3xl font-bold justify-center py-2">
             Login
           </h2>
@@ -55,7 +47,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="fieldset p-4 space-y-2">
             <div>
               <label className="input flex items-center gap-2 w-full">
-                <User />
+                <Mail />
                 <input
                   type="email"
                   placeholder="Digite seu email"

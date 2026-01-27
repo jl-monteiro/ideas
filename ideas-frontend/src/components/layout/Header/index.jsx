@@ -1,7 +1,25 @@
+import { Link, useNavigate } from "react-router-dom";
+import { authClient } from "../../../lib/auth-client";
+import { LogIn, LogOut } from "lucide-react";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const { data: session } = authClient.useSession();
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+      navigate("/login");
+    } catch (e) {
+      console.error("Logout failed", e);
+    }
+  };
   return (
-    <nav className="bg-zinc-700 navbar w-full">
+    <nav className="bg-base-300 navbar w-full">
       <label
         htmlFor="my-drawer-4"
         aria-label="open sidebar"
@@ -23,7 +41,27 @@ const Header = () => {
           <path d="M14 10l2 2l-2 2"></path>
         </svg>
       </label>
-      <div className="px-4">ideas</div>
+      <div className="px-4 navbar-start">ideas</div>
+      <div className="px-8 navbar-end">
+        {session ? (
+          <button
+            className="btn btn-ghost btn-sm hover:text-error"
+            aria-label="Logout"
+            onClick={handleLogout}
+          >
+            <LogOut size="20" />
+
+          </button>
+        ) : (
+          <button
+            className="btn btn-ghost btn-sm"
+            aria-label="Login"
+            onClick={handleLogin}
+          >
+            <LogIn size="20" />
+          </button>
+        )}
+      </div>
     </nav>
   );
 };

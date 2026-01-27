@@ -10,7 +10,11 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
+  
+  if (session) {
+    navigate("/");
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,19 +41,7 @@ const Signup = () => {
     }
   };
 
-  useEffect(() => {
-    if (!isPending && session) {
-      navigate("/");
-    }
-  }, [session, isPending, navigate]);
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
+ 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
@@ -138,7 +130,7 @@ const Signup = () => {
               <span>{error}</span>
             </div>
           )}
-          
+
           <div className="divider">OU</div>
 
           <div className="text-center">
